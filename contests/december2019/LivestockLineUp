@@ -1,0 +1,129 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.*;
+
+public class LivestockLineUp {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+        List<String> cows = Arrays.asList(new String[]{"Sue", "Beatrice", "Belinda", "Bessie", "Betsy", "Blue", "Bella", "Buttercup"});
+        // Assuming a file named lineup.in in the current directory.
+        String fileIn = "lineup.in";
+        List<String> pair = new ArrayList<>();
+        Scanner sc = new Scanner(new File(fileIn));
+        while (sc.hasNextLine()) {
+            String s = sc.nextLine();
+            String[] input = s.split(" ");
+            if (input.length < 2)
+                continue;
+            pair.add(input[0]);
+            pair.add(input[input.length - 1]);
+        }
+
+        List<CowPair> constraints = new ArrayList<>();
+        for (int i = 0; i < pair.size(); i += 2) {
+            constraints.add(new CowPair(pair.get(i), pair.get(i + 1)));
+        }
+        constraints = Arrays.asList(constraints.toArray(new CowPair[]{}));
+        for (int i = 0; i < constraints.size(); i++) {
+            System.out.println(constraints.get(i).cow1 + " " + constraints.get(i).cow2);
+        }
+
+        CowQueuePlanner planner = new CowQueuePlanner(cows, constraints);
+        Collections.sort(planner.queues);
+        PrintWriter writer = new PrintWriter("lineup.out", "UTF-8");
+        planner.queues.get(0).cows.forEach(writer::println);
+        writer.close();
+    }
+}
+
+class CowQueuePlanner {
+    List<CowQueue> queues = new ArrayList<>();
+
+    CowQueuePlanner(List<String> cows, List<CowPair> constraints) {
+        initQueues(cows, constraints);
+    }
+
+    private void initQueues(List<String> cows, List<CowPair> constraints) {
+        initQueues(new ArrayList<>(), cows, constraints);
+    }
+
+    private void initQueues(List<String> prefix, List<String> remainings, List<CowPair> constraints) {
+        int n = remainings.size();
+        if (n == 1) {
+            List<String> result = new ArrayList<>();
+            result.addAll(prefix);
+            result.add(remainings.get(0));
+            CowQueue queue = new CowQueue(result);
+            if (queue.meetConstraints(constraints)) {
+                this.queues.add(queue);
+            }
+        } else {
+            for (int i = 0; i < n; i++) {
+                List<String> newPrefix = new ArrayList<>();
+                newPrefix.addAll(prefix);
+                newPrefix.add(remainings.get(i));
+                List<String> newRemainings = new ArrayList<>();
+                newRemainings.addAll(remainings.subList(0, i));
+                newRemainings.addAll(remainings.subList(i + 1, remainings.size()));
+                initQueues(newPrefix, newRemainings, constraints);
+            }
+        }
+    }
+}
+
+class CowQueue implements Comparable<CowQueue> {
+    List<String> cows;
+
+    CowQueue(List<String> cows) {
+        this.cows = cows;
+    }
+
+    private String getFront(String cow) {
+        int index = cows.indexOf(cow);
+        return index == 0 ? null : cows.get(index - 1);
+    }
+
+    private String getBehind(String cow) {
+        int index = cows.indexOf(cow);
+        return index == cows.size() - 1 ? null : cows.get(index + 1);
+    }
+
+    boolean meetConstraints(List<CowPair> pairs) {
+        for (int i = 0; i < pairs.size(); i++) {
+            CowPair pair = pairs.get(i);
+            if (!(pair.cow2.equals(getFront(pair.cow1)) || pair.cow2.equals(getBehind(pair.cow1)))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(CowQueue o) {
+        int length = this.cows.size() <= o.cows.size() ? this.cows.size() : o.cows.size();
+        for (int i = 0; i < length; i++) {
+            String cow1 = this.cows.get(i);
+            String cow2 = o.cows.get(i);
+            int compareResult = cow1.compareTo(cow2);
+            if (compareResult == 0) {
+                continue;
+            } else {
+                return compareResult;
+            }
+        }
+
+        // If comparing elements doesn't help, then compare the size of the cows.
+        return this.cows.size() - o.cows.size();
+    }
+}
+
+class CowPair {
+    final String cow1;
+    final String cow2;
+
+    CowPair(String cow1, String cow2) {
+        this.cow1 = cow1;
+        this.cow2 = cow2;
+    }
+}
