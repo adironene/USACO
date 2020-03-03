@@ -1,8 +1,8 @@
-Who We Are
+**Who We Are**
 
 The USA Computing Olympiad fosters pre-college computing through training, contests, and international competitions. A handful of coaches organizes these features and also chaperone students who represent the USA in international venues. Find a wealth of details and other information at the USACO Web Site.
 
-Specific USACO Goals
+**Specific USACO Goals**
 
 Specific goals of the USACO include:
 
@@ -13,7 +13,7 @@ About Advanced Training
 
 This website includes training for students who typically have a year or two of programming experience and also have interest in 'algorithmic programming'. The techniques taught and drilled here are difficult. Expect to spend anywhere from a few minutes to several hours per problem if you are an excellent programmer. Beginners will not enjoy these problems, as they require extensive practice and experience. Someday we hope to have an additional lower-level training site for those just beginning in programming.
 
-About This Web Site
+**About This Web Site**
 
 This web site is designed to accomplish the goals above.
 
