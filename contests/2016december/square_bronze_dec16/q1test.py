@@ -26,7 +26,7 @@ def run_test(input_file, output_file, solution_script):
         return False, actual_output, expected_output
 
 def main():
-    solution_script = 'q1.py'
+    solution_script = 'q3.py'
     
     test_number = 1
     while os.path.exists(f'{test_number}.in'):
